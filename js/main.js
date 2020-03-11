@@ -1,8 +1,6 @@
 "use strict";
-import {AStar} from"./astar.js";
-import {LsArray} from  "./stack.js";
-import {Heap} from "./heap.js";
 
+import {test_stack_and_lsarray, test_heap} from './tests.js';
 
 var canvas = document.createElement('canvas');
 canvas.width = canvas.height = 1000;
@@ -16,21 +14,18 @@ function clear_canvas(){
 
 clear_canvas();
 
-
-let base_image = new Image();
-base_image.crossOrigin = "Anonymous";
-base_image.src = 'images/test.jpg';
-
-base_image.onload = function () {
-	ctx.drawImage(base_image, 0, 0, canvas.width, canvas.height);
-    var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+function image_loader(path='images/test.jpg'){
+    let base_image = new Image();
+    base_image.crossOrigin = "Anonymous";
+    base_image.src = 'images/test.jpg';
+    
+    base_image.onload = function () {
+        ctx.drawImage(base_image, 0, 0, canvas.width, canvas.height);
+        var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
 }
 
-let stack = new LsArray();
-let heap = new Heap();
+image_loader();
 
-for(let i = 10; i >0; i--){
-    heap.insert(i);
-}
-console.log(heap);
-stack.pop_min();
+test_stack_and_lsarray(5555);
+test_heap(98765);
