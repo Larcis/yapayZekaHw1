@@ -24,9 +24,13 @@ base_image.src = 'images/test.jpg';
 base_image.onload = function () {
 	ctx.drawImage(base_image, 0, 0, canvas.width, canvas.height);
     var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    console.log(img)
 }
 
 let stack = new Stack();
 let heap = new Heap();
+
+for(let i = 10; i >0; i--){
+    heap.insert(i);
+    console.log(heap);
+}
 stack.pop();

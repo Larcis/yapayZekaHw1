@@ -62,7 +62,7 @@ Heap.prototype.right_child = function(idx){
 }
 
 Heap.prototype.parent = function(idx){
-    return (idx - 1) / 2;   
+    return Math.floor((idx - 1) / 2);   
 }
 
 Heap.prototype.swap = function(i, j){
