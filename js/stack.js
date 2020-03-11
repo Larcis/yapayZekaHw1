@@ -8,7 +8,7 @@ class LsArray{
 };
 
 LsArray.prototype.pop_min = function(){
-    let min = MAX_INT;
+    let min = Number.MAX_VALUE;
     let idx = -1
     for(let i = 0; i < this.stack.length; i++){
         if(this.stack[i] < min){

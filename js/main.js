@@ -31,6 +31,6 @@ let heap = new Heap();
 
 for(let i = 10; i >0; i--){
     heap.insert(i);
-    console.log(heap);
 }
-stack.pop();
+console.log(heap);
+stack.pop_min();
