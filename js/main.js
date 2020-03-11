@@ -1,6 +1,6 @@
 "use strict";
-import "./astar.js";
-import {Stack} from  "./stack.js";
+import {AStar} from"./astar.js";
+import {LsArray} from  "./stack.js";
 import {Heap} from "./heap.js";
 
 
@@ -26,7 +26,7 @@ base_image.onload = function () {
     var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
 
-let stack = new Stack();
+let stack = new LsArray();
 let heap = new Heap();
 
 for(let i = 10; i >0; i--){
