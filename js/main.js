@@ -1,31 +1,25 @@
 "use strict";
 
-import {test_stack_and_lsarray, test_heap} from './tests.js';
+import {test_stack_and_lsarray, test_heap, test_lsarray} from './tests.js';
+import {CanvasHelper} from './canvas_helper.js';
+import {AStar} from './astar.js';
 
-var canvas = document.createElement('canvas');
-canvas.width = canvas.height = 1000;
-document.body.appendChild(canvas);
-var ctx = canvas.getContext("2d");
 
-function clear_canvas(){
-    ctx.fillStyle = "gray";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
+let c = new CanvasHelper(1000);
 
-clear_canvas();
+c.image_loader("images/test3.jpg");
 
-function image_loader(path='images/test.jpg'){
-    let base_image = new Image();
-    base_image.crossOrigin = "Anonymous";
-    base_image.src = 'images/test.jpg';
-    
-    base_image.onload = function () {
-        ctx.drawImage(base_image, 0, 0, canvas.width, canvas.height);
-        var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    }
-}
+setTimeout(function(){
+    console.log(c.get_img_data());
+    let img = c.get_img_data();
+    var astar = new AStar(img);
+    astar.set_end(0, 0);
+    astar.set_start(600,300);
+    astar.solve();
+}, 50);
 
-image_loader();
-
+/*
 test_stack_and_lsarray(5555);
-test_heap(98765);
+test_heap(5555);
+test_lsarray(5555);
+*/

@@ -36,7 +36,7 @@ Heap.prototype.up_heapify = function(){
 }
 
 Heap.prototype.is_greater = function(i, j){
-    return this.heap[i] > this.heap[j];
+    return this.heap[i].cost > this.heap[j].cost;
 }
 
 Heap.prototype.down_heapify = function(idx){
@@ -69,4 +69,16 @@ Heap.prototype.swap = function(i, j){
     let tmp = this.heap[i];
     this.heap[i] = this.heap[j];
     this.heap[j] = tmp;   
+}
+
+Heap.prototype.clear = function(){
+    this.heap = [];   
+}
+
+Heap.prototype.empty = function(){
+    return this.heap.length == 0;   
+}
+
+Heap.prototype.type = function(){
+    return "Heap";   
 }
