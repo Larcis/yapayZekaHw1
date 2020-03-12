@@ -4,7 +4,8 @@ import {LsArray} from './lsarray.js';
 export {AStar};
 
 class AStar{
-    constructor(image, mode="heap", canvas_id="mc"){
+    constructor(mode="heap", canvas_helper){
+        let image = canvas_helper.get_img_data();
         this.w  = image.width;
         this.h = image.height;
         this.data = image.data;
@@ -14,22 +15,40 @@ class AStar{
             this.open_nodes = new LsArray();
         this.start = null;
         this.end = null;
-        this.canvas = document.getElementById(canvas_id);
-        this.ctx = this.canvas.getContext('2d');
-        this.ctx.fillStyle ="green";
+        this.canvas_helper = canvas_helper;
+        this.state = 0;
+        this.canvas_helper.set_onmousedown((e)=>{
+            console.log(this.state);
+            switch (this.state) {
+                case 0:
+                    this.set_start(e.pageX, e.pageY);
+                break;
+                case 1:
+                    this.set_end(e.pageX, e.pageY);
+                //break;
+                case 2:
+                    setTimeout(()=>this.solve(), 50);
+                    this.canvas_helper.reload();
+                    console.log(this.start, this.end);
+                break;
+            }
+            this.state = ++this.state % 2;
+        });
     }
     gn(i, j){
         let idx = 4 * (i * this.w + j);
-        let r = 255 - this.data[idx];
+        let r = this.data[idx];
+        //alert(r)
         if(r == 0) r = 1;
+        //console.log(r);
         return r;
     }
     hn(i, j){
-        //return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2);
-        return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*255;
+        return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*255;
+        //return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*255;
     }
     is_in_range(i, j){
-        if(i < 0 || i >= this.h || j < 0 || j >= this.w)
+        if(i < 0 || i >= this.w || j < 0 || j >= this.h)
             return false;
         return true;
     }
@@ -68,21 +87,17 @@ class AStar{
         this.open_nodes.insert(this.start);
         let found = false;
         let cur = null;
-        let iter = 9999999;
+        let iter = 999999;
         while(!this.open_nodes.empty() && !found && --iter){
             cur = this.open_nodes.pop_min();
-            this.ctx.fillRect(cur.x, cur.y, 1, 1);
-            /*if(iter % 1000 == 0)
-                console.log(iter, cur);*/
-            //alert(cur.x+ " "+ cur.y);
-            //console.log(cur);
+            this.canvas_helper.draw_dot(cur);
             if(this.is_end(cur)){
                 found = true;
             } else {
                 this.add_neighbours(cur.x, cur.y, cur.g_cost);
             }
         }
-        console.log("iter end: "+cur.x+ " "+ cur.y + " " + cur.cost);
+        console.log("iter end: "+cur.x+ " "+ cur.y + " " + cur.cost + " ");
 
     }
 }

@@ -4,6 +4,7 @@ export {CanvasHelper};
 
 class CanvasHelper{
     constructor(size=1500, id="mc"){
+        this.cur_img_path = null;
         this.canvas = document.createElement('canvas');
         this.canvas.width = this.canvas.height = size;
         this.canvas.id = id;
@@ -25,17 +26,32 @@ class CanvasHelper{
 }
 
 CanvasHelper.prototype.clear_canvas = function(){
-    this.ctx.fillStyle = "gray";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 }
 
 CanvasHelper.prototype.image_loader = function (path='images/test.jpg'){
     this.clear_canvas();
     this.loaded = false;
+    this.cur_img_path = path;
     this.loaded_image.src = path;
+}
+
+CanvasHelper.prototype.reload = function (){
+    this.clear_canvas();
+    this.loaded = false;
+    this.loaded_image.src = this.cur_img_path;
 }
 
 
 CanvasHelper.prototype.get_img_data = function (){ 
     return this.img;
+}
+
+CanvasHelper.prototype.draw_dot = function(cur, color="green", sz=2){
+    this.ctx.fillStyle = color;
+    this.ctx.fillRect(cur.x, cur.y, sz, sz);
+}
+
+CanvasHelper.prototype.set_onmousedown = function(func){
+    this.canvas.onmousedown = func;
 }
