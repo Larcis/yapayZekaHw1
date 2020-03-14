@@ -140,12 +140,16 @@ let hn_coeff = 1;
 var astar_h = new AStar("heap", hn_coeff);
 var astar_ls = new AStar("lsarray", hn_coeff);
 onmessage = function(e){
-    astar_h.set_image(e.data.img);
-    astar_h.set_end(e.data.end[0],e.data.end[1]);
-    astar_h.set_start(e.data.start[0], e.data.start[1]);
-    astar_h.solve();
-    astar_ls.set_image(e.data.img);
-    astar_ls.set_end(e.data.end[0],e.data.end[1]);
-    astar_ls.set_start(e.data.start[0], e.data.start[1]);
-    astar_ls.solve();
+    if(e.data?.type == "heap"){
+        trigger_astar(astar_h, e);
+    } else {
+        trigger_astar(astar_ls, e);
+    }
+}
+
+function trigger_astar(astar, e){
+    astar.set_image(e.data.img);
+    astar.set_end(e.data.end[0],e.data.end[1]);
+    astar.set_start(e.data.start[0], e.data.start[1]);
+    astar.solve();
 }

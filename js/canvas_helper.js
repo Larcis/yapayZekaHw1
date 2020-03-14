@@ -3,6 +3,7 @@
 class CanvasHelper{
     constructor(size=1500, id="mc"){
         this.cur_img_path = null;
+        this.path_colors = null;
         this.canvas = document.createElement('canvas');
         this.canvas.width = this.canvas.height = size;
         this.canvas.id = id;
@@ -12,6 +13,7 @@ class CanvasHelper{
         this.loaded = false;
         this.loaded_image = new Image();
         this.loaded_image.crossOrigin = "Anonymous";
+        this.last_path_state = 0;
         let this_ = this;
         this.loaded_image.onload = function () {
             this_.loaded = true;
@@ -19,8 +21,23 @@ class CanvasHelper{
             this_.img = this_.ctx.getImageData(0, 0, this.width, this.height);
         }
         this.clear_canvas();
+        this.set_path_colors();
     }
 
+}
+
+CanvasHelper.prototype.set_path_colors = function(){
+    this.path_colors = ["green", "yellow", "blue", "white", "lime", "violet"];
+}
+
+
+CanvasHelper.prototype.get_path_color = function(){
+    if(this.path_colors.length == 0)
+        this.set_path_colors();
+    let idx = Math.floor(Math.random() * this.path_colors.length);
+    let color = this.path_colors[idx];
+    this.path_colors.splice(idx, 1); 
+    return color;
 }
 
 CanvasHelper.prototype.clear_canvas = function(){
@@ -56,7 +73,14 @@ CanvasHelper.prototype.set_onmousedown = function(func){
 
 
 CanvasHelper.prototype.draw_path = function(path){
-    path.forEach(i => {
+    let color = this.get_path_color();
+    for(let i = this.last_path_state; i < path.length; i+=8){
+        path[i].x += this.last_path_state;
+        path[i].y += this.last_path_state;
+        this.draw_dot(path[i], color, 6);
+    }
+    this.last_path_state = !this.last_path_state ? 5 : 0;
+    /*path.forEach(i => {
         this.draw_dot(i, "blue", 3);
-    });
+    });*/
 }

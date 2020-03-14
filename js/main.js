@@ -5,16 +5,23 @@ let end = null;
 let state = 0;
 let is_calculating = false;
 
-let c = new CanvasHelper(2000);
+let c = new CanvasHelper(3000);
+c.image_loader("images/test6.jpg");
 
-c.image_loader("images/test3.jpg");
+function reload_wrapper(){
+    is_calculating = true;
+    c.reload();
+    setTimeout(()=> is_calculating = false , 300);
+}
 
-let worker = new Worker("js/astar.js");
-worker.onmessage = function(e) {
+
+let astar_worker = new Worker("js/astar.js");
+astar_worker.onmessage = function(e) {
     if(e.data?.finished){
         let d = e.data;
         if(d.fail){
             alert(d.message);
+            is_calculating = false;
         }else{
             console.log(
                 "stats "+d.type+":"+ 
@@ -23,8 +30,7 @@ worker.onmessage = function(e) {
                 "\nmax stack size: "+d.max_stack_size
             );
         }
-        if(d.type == "LSarray")
-            is_calculating = false;
+        is_calculating = false;
     } else if(e.data?.path){
         c.draw_path(e.data.path);
     }
@@ -34,16 +40,20 @@ worker.onmessage = function(e) {
 setTimeout(function(){
     c.set_onmousedown((e)=>{
         //e.preventDefault();
+        console.log(e);
         if(e.button == 0){
             if(is_calculating) return;
             switch (state) {
                 case 0:
-                    start = [e.pageX, e.pageY];
+                    //reload_wrapper();
+                    start = [5*e.pageX, 5*e.pageY];
                 break;
                 case 1:
-                    end = [e.pageX, e.pageY];
+                    end = [5*e.pageX, 5*e.pageY];
                     is_calculating = true;
-                    worker.postMessage({img: c.get_img_data(), start:start, end: end}); 
+                    let im = c.get_img_data();
+                    console.log(im, start, end);
+                    astar_worker.postMessage({img: im, start:start, end: end, type: "heap"}); 
                 break;
             }
             state = ++state % 2;

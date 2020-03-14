@@ -16,10 +16,9 @@ LsArray.prototype.pop_min = function(){
             idx = i;
         }
     }
-        let val = this.stack[idx];
-        this.stack.splice(idx, 1);
-        return val;
- 
+    let val = this.stack[idx];
+    this.stack.splice(idx, 1);
+    return val;
 };
 
 LsArray.prototype.insert = function(item){
