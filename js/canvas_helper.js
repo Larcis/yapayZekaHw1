@@ -27,11 +27,11 @@ class CanvasHelper{
 }
 
 CanvasHelper.prototype.set_path_colors = function(){
-    this.path_colors = ["green", "yellow", "blue", "white", "lime", "violet"];
+    this.path_colors = ["green", "yellow", "blue", "white"];
 }
 
 /**
- * yukarıda tanımlı 6 renkten 1 ni rastgele secer ve sectigi 
+ * yukarıda tanımlı 4 renkten 1 ni secer ve sectigi 
  * rengi geri döndürür. Secilen renk listeden silinir bu sayede
  * aynı renk ta ki tüm diger renkler bir kere secilene kadar bir
  * daha secilmez. renk listesi bosaldıgında tekrardan tum renkler
@@ -40,7 +40,7 @@ CanvasHelper.prototype.set_path_colors = function(){
 CanvasHelper.prototype.get_path_color = function(){
     if(this.path_colors.length == 0)
         this.set_path_colors();
-    let idx = Math.floor(Math.random() * this.path_colors.length);
+    let idx = 0;//Math.floor(Math.random() * this.path_colors.length);
     let color = this.path_colors[idx];
     this.path_colors.splice(idx, 1); 
     return color;

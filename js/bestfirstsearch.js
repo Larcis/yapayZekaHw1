@@ -2,23 +2,22 @@
 
 importScripts('heap.js', 'lsarray.js');
 
-class AStar{
-    constructor(mode="heap", hn_coefficient=127){
+class BestFirstSearch{
+    constructor(mode="heap"){
         this.w  = null; // üzerinde çalışılacak resmmin genişliği
         this.h = null; //üzerinde çalışılacak resmmin yüksekliği
         this.data = null; // üzerinde çalışılacak resmmin verisi
-        this.hn_coefficient = hn_coefficient; //heuristic function ın sonucunun çarpıldığı sayı
         if(mode == "heap")
-            this.open_nodes = new Heap(); //astar yaparken o an secilebilecek nodların saklandıgı alan
+            this.open_nodes = new Heap(); //BestFirstSearch yaparken o an secilebilecek nodların saklandıgı alan
         else
             this.open_nodes = new LsArray();
-        this.start = null; //astar baslangıc koordinatı
+        this.start = null; //BestFirstSearch baslangıc koordinatı
         this.end = null; // bitis koordinatı
-        this.visited = {}; //astar yaparken daha önce ziyaret edilmiş nodların parentlarının saklandıgı alan
+        this.visited = {}; //BestFirstSearch yaparken daha önce ziyaret edilmiş nodların parentlarının saklandıgı alan
         this.max_stack_size = 0; //stackin en buyuk oldugu andakı degerı
     }
     /**
-     * astar da kullanılacak resmı set eder
+     * BestFirstSearch da kullanılacak resmı set eder
      */
     set_image(image){
         this.w  = image.width;
@@ -26,23 +25,12 @@ class AStar{
         this.data = image.data;
     }
     /**
-     * bir hucreye yapılacak harekedın maliyeti
-     * hucrenın R degerının tersıdır(255-R)
-     * maliyet 0 sa 1 e cevirilir
-     */
-    gn(i, j){
-        let idx = 4 * (j * this.w + i);
-        let r = 255 - this.data[idx];
-        if(r == 0) r = 1;
-        return r;
-    }
-    /**
      * heuristic cost fonksiyonu
      * euclid distance kullanılıyor.
      */
     hn(i, j){
         if(this.end)
-            return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*this.hn_coefficient;
+            return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2);
         return Number.MAX_VALUE;
         //return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*2;
     }
@@ -67,8 +55,7 @@ class AStar{
             let xx = parent.x + x_[it];
             let yy = parent.y + y_[it];
             if(this.is_in_range(xx, yy) && !this.visited[xx+"_"+yy]){ //eger komsu resmin sınırlarındaysa ve daha once zıyaret edılmedıyse
-                let gcost = this.gn(xx, yy) + parent.g_cost; //ilgili komsuya gitmenin gercek maliyeti
-                let item = {x: xx, y: yy, cost:(this.hn(xx, yy) + gcost), g_cost: gcost};
+                let item = {x: xx, y: yy, cost:this.hn(xx, yy)};
                 this.visited[xx+"_"+yy] = parent; //ilgili komsuyu ziyaret edildi olarak işaretle
                 //postMessage([xx, yy]); 
                 //üstteki satır main threade mesaj gonderır ve 
@@ -177,7 +164,7 @@ class AStar{
                 time_taken: performance.now() - t0, 
                 total_pop: count, 
                 max_stack_size: this.max_stack_size,
-                type:" AStar " + this.open_nodes.type()
+                type: "Best First Search " + this.open_nodes.type()
             });
         } else {
             postMessage({ //eger sona ulasmadıysam main threade haber ver.
@@ -190,25 +177,20 @@ class AStar{
     }
 }
 
-let hn_coeff = 1; // heuristic fonksiyonunda cıkan degerın carpılacagı sayı
-var astar_h = new AStar("heap", hn_coeff); //heap yapısını kullanan astar
-var astar_ls = new AStar("lsarray", hn_coeff); //linear search ile minimum bulan normal bir diziyi kullanan astar
+var bfs_h = new BestFirstSearch("heap"); //heap yapısını kullanan bfs
+var bfs_ls = new BestFirstSearch("lsarray"); //linear search ile minimum bulan normal bir diziyi kullanan bfs
 
 onmessage = function(e){//main thread den mesaj gelirse calısacak fonksiyon
-    if(e.data?.type == "heap"){ //heap yapısıyla ıstıyorsa heapli astar ı calıstır.
-        trigger_astar(astar_h, e);
+    if(e.data?.type == "heap"){ //heap yapısıyla ıstıyorsa heapli bfs ı calıstır.
+        trigger_bfs(bfs_h, e);
     } else {
-        trigger_astar(astar_ls, e);
+        trigger_bfs(bfs_ls, e);
     }
 }
 
-/**
- * astar objesının kullanacagı resmı, baslangıc ve bıtıs noktasını set et ve
- * sonrasında cozmeye basla.
- */
-function trigger_astar(astar, e){ 
-    astar.set_image(e.data.img);
-    astar.set_end(e.data.end[0],e.data.end[1]);
-    astar.set_start(e.data.start[0], e.data.start[1]);
-    astar.solve();
+function trigger_bfs(bfs, e){ 
+    bfs.set_image(e.data.img);
+    bfs.set_end(e.data.end[0],e.data.end[1]);
+    bfs.set_start(e.data.start[0], e.data.start[1]);
+    bfs.solve();
 }
