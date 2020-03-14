@@ -6,7 +6,7 @@ let state = 0; //durum makınesının durum degerı
 let is_calculating = false; //arka planda suan hesaplama yapılıyor mu?
 
 let c = new CanvasHelper(3000); //canvas
-c.image_loader("images/test6.jpg"); //canvasa ilgili resmi yükle
+c.image_loader("images/test5.jpg"); //canvasa ilgili resmi yükle
 
 
 let astar_worker = new Worker("js/astar.js"); //arka planda astar hesaplama altyapısı baslat
@@ -19,19 +19,19 @@ setTimeout(function(){//500 ms sonra bu fonksiyonu calıstır. (resmin yuklemes�
 
     c.set_onmousedown((e)=>{//canvasa mouse ıle tıklandıgında asagıdakı fonksıyonu calıstır.
         //e.preventDefault();
-        console.log(e);
+        //console.log(e);
         if(e.button == 0){ // eger tıklanan mouse butonu sol tık ıse
             if(is_calculating || state > 1) return; //suan astar hesaplama yapıyorsa hıc bır sey yapmadan fonksıyondan cık
+            let coord = [Math.floor(2*e.pageX), Math.floor(2*e.pageY)]
             switch (state) { //duruma baglı olarak
                 case 0:
                     reload_wrapper();
-                    start = [5*e.pageX, 5*e.pageY]; //ilk tıklamada baslangıc koordinatını set et
+                    start = coord; //ilk tıklamada baslangıc koordinatını set et
                 break;
                 case 1:
                     //ikinci tıklamada bitis noktasını set et ve
-                    //astar koduna hesaplamayı baslatmak ıcın mesaj gonder
-                    end = [5*e.pageX, 5*e.pageY]; 
-                    trigger_workers();
+                    end = coord; 
+                    trigger_workers(); // worker ları tetikle
                 break;
             }
             ++state;
@@ -44,10 +44,9 @@ setTimeout(function(){//500 ms sonra bu fonksiyonu calıstır. (resmin yuklemes�
 function trigger_workers(){
     is_calculating = true;
     let im = c.get_img_data();
-    let prev_state = state;
     function waitUntilStateChange(waited_state, func){
         if(state != waited_state ){
-            setTimeout(()=>waitUntilStateChange(waited_state, func), 20);
+            setTimeout(()=>waitUntilStateChange(waited_state, func), 10);
         } else {
             func()
         }
@@ -70,7 +69,7 @@ function reload_wrapper(){ //canvastakı resmı yenılemek ıcın
     c.reload(); // aynı resmı bır daha yukle
     setTimeout(()=> is_calculating = false , 300); //300 ms sonra mousedown eventını tekrar aktıf et.
 }
-
+//setInterval(()=> console.log(state), 50);
 function worker_onmessage(e) { //arka planda calısan astar kodundan mesaj gelınce calıstırılacak fonksıyon
     if(e.data?.finished){ //eger gelen mesaj finished iceriyorsa
         let d = e.data;

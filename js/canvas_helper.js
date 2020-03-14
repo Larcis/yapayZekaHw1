@@ -7,7 +7,7 @@ class CanvasHelper{
         this.canvas = document.createElement('canvas');
         this.canvas.width = this.canvas.height = size;
         this.canvas.id = id;
-        document.body.appendChild(this.canvas);
+        document.getElementById("canvasContainer").appendChild(this.canvas);
         this.ctx = this.canvas.getContext("2d");
         this.img = null; //canvasta buluna resmin w, h ve data si
         this.loaded = false; //canvasa resmin yüklenip yüklenmediğini takip eden değişken
