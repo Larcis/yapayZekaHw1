@@ -1,10 +1,5 @@
 "use strict";
 
-import {LsArray} from './lsarray.js';
-import {Heap} from './heap.js';
-
-export {test_stack_and_lsarray, test_heap, test_lsarray};
-
 function test_stack_and_lsarray(test_size=5999){
     let stack = new LsArray();
     let heap = new Heap();

@@ -1,6 +1,4 @@
 "use strict";
-export {Heap};
-
 
 class Heap{
     constructor(){

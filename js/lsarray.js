@@ -1,6 +1,4 @@
 "use strict";
-export {LsArray};
-
 
 class LsArray{
     constructor(){
@@ -18,12 +16,6 @@ LsArray.prototype.pop_min = function(){
             idx = i-1;
         }
     }
-    /*for(let i = 0; i < this.stack.length; i++){
-        if(this.stack[i] < min){
-            min = this.stack[i];
-            idx = i;
-        }
-    }*/
     if(idx != -1){
         let val = this.stack[idx];
         this.stack.splice(idx, idx);

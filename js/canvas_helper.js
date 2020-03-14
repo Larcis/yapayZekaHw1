@@ -1,6 +1,4 @@
 "use strict"; 
-export {CanvasHelper};
-
 
 class CanvasHelper{
     constructor(size=1500, id="mc"){
@@ -47,11 +45,18 @@ CanvasHelper.prototype.get_img_data = function (){
     return this.img;
 }
 
-CanvasHelper.prototype.draw_dot = function(cur, color="green", sz=2){
+CanvasHelper.prototype.draw_dot = function(cur, color="green", sz=1){
     this.ctx.fillStyle = color;
     this.ctx.fillRect(cur.x, cur.y, sz, sz);
 }
 
 CanvasHelper.prototype.set_onmousedown = function(func){
     this.canvas.onmousedown = func;
+}
+
+
+CanvasHelper.prototype.draw_path = function(path){
+    path.forEach(i => {
+        this.draw_dot(i, "blue", 3);
+    });
 }

@@ -1,103 +1,114 @@
 "use strict";
-import {Heap} from "./heap.js";
-import {LsArray} from './lsarray.js';
-export {AStar};
+
+importScripts('heap.js', 'lsarray.js');
 
 class AStar{
-    constructor(mode="heap", canvas_helper){
-        let image = canvas_helper.get_img_data();
-        this.w  = image.width;
-        this.h = image.height;
-        this.data = image.data;
+    constructor(mode="heap"){
+        this.w  = null;
+        this.h = null;
+        this.data = null;
         if(mode == "heap")
             this.open_nodes = new Heap();
         else
             this.open_nodes = new LsArray();
         this.start = null;
         this.end = null;
-        this.canvas_helper = canvas_helper;
-        this.state = 0;
-        this.canvas_helper.set_onmousedown((e)=>{
-            console.log(this.state);
-            switch (this.state) {
-                case 0:
-                    this.set_start(e.pageX, e.pageY);
-                break;
-                case 1:
-                    this.set_end(e.pageX, e.pageY);
-                //break;
-                case 2:
-                    setTimeout(()=>this.solve(), 50);
-                    this.canvas_helper.reload();
-                    console.log(this.start, this.end);
-                break;
-            }
-            this.state = ++this.state % 2;
-        });
+        this.visited = {};
+    }
+    set_image(image){
+        this.w  = image.width;
+        this.h = image.height;
+        this.data = image.data;
     }
     gn(i, j){
-        let idx = 4 * (i * this.w + j);
-        let r = this.data[idx];
-        //alert(r)
+        let idx = 4 * (j * this.w + i);
+        let r = 255 - this.data[idx];
         if(r == 0) r = 1;
-        //console.log(r);
         return r;
     }
     hn(i, j){
-        return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*255;
-        //return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*255;
+        return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*10;
+        //return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*2;
     }
     is_in_range(i, j){
         if(i < 0 || i >= this.w || j < 0 || j >= this.h)
             return false;
         return true;
     }
-    add_neighbours(i, j, parent_gcost){
+    add_neighbours(parent){
         let x_ = [1, -1, 0, 0];
         let y_ = [0, 0 , 1, -1];
         for(let it = 0; it < 4; it++){
-            let xx = i + x_[it];
-            let yy = j + y_[it];
-            let gcost = this.gn(xx, yy) + parent_gcost;
-            let item = {x: xx, y: yy, cost:(this.hn(xx, yy) + gcost), g_cost: gcost,  parent: [i, j]};
-            if(this.is_in_range(xx, yy)){
+            let xx = parent.x + x_[it];
+            let yy = parent.y + y_[it];
+            let gcost = this.gn(xx, yy) + parent.g_cost;
+            let item = {x: xx, y: yy, cost:(this.hn(xx, yy) + gcost), g_cost: gcost};
+            if(this.is_in_range(xx, yy) && !this.visited[""+xx+yy]){
+                this.visited[""+xx+yy] = parent;
                 this.open_nodes.insert(item);
             }
 
         }
     }
+    clear_state(){
+        this.start = this.end = null;
+        this.visited = {};
+        this.open_nodes.clear();
+    }
     set_start(i, j){
-        this.start = {x: i, y: j, cost: 0, g_cost: 0};
+        if(i  <= this.w && j < this.h)
+            this.start = {x: i, y: j, cost: this.hn(i, j), g_cost: 0};
     }
     set_end(i, j){
-        this.end = {x: i, y: j};
+        if(i  <= this.w && j < this.h)
+            this.end = {x: i, y: j};
     }
     trace_back(){
-
+        let path = [];
+        let cur = this.end;
+        do{
+            path.push(cur);
+            cur = this.visited[""+cur.x+cur.y];
+        }while(!this.is_start(cur));
+        postMessage({path: path});
+        this.clear_state();
     }
     is_end(cur){
         return (cur.x == this.end.x && cur.y == this.end.y);
     }
+    is_start(cur){
+        return (cur.x == this.start.x && cur.y == this.start.y);
+    }
     solve(){
         if(this.start == null || this.end == null){
-            alert("başlangıç veya bitiş noktası belli değil.");
+            console.log("başlangıç veya bitiş noktası belli değil.");
+            this.clear_state();
+            postMessage({finished: true});
             return;
         }
         this.open_nodes.clear();
         this.open_nodes.insert(this.start);
         let found = false;
         let cur = null;
-        let iter = 999999;
-        while(!this.open_nodes.empty() && !found && --iter){
+        let iter = 599999;
+        while(!this.open_nodes.empty() && !found){
             cur = this.open_nodes.pop_min();
-            this.canvas_helper.draw_dot(cur);
+            //postMessage(cur);
             if(this.is_end(cur)){
                 found = true;
             } else {
-                this.add_neighbours(cur.x, cur.y, cur.g_cost);
+                this.add_neighbours(cur);
             }
         }
-        console.log("iter end: "+cur.x+ " "+ cur.y + " " + cur.cost + " ");
-
+        postMessage({finished: true});
+        this.trace_back();
     }
+}
+
+var astar = new AStar("lsarray");
+onmessage = function(e){
+    astar.set_image(e.data.img);
+    astar.set_end(e.data.end[0],e.data.end[1]);
+    astar.set_start(e.data.start[0], e.data.start[1]);
+    astar.solve();
 }
