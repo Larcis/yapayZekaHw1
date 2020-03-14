@@ -7,21 +7,19 @@ class LsArray{
 };
 
 LsArray.prototype.pop_min = function(){
-    let min = Number.MAX_VALUE;
-    let idx = -1
-    let i = this.stack.length+1;
+    let min = this.stack[0].cost;
+    let idx = 0;
+    let i = this.stack.length;
     while(--i){
-        if(this.stack[i-1].cost < min){
-            min = this.stack[i-1].cost;
-            idx = i-1;
+        if(this.stack[i].cost < min){
+            min = this.stack[i].cost;
+            idx = i;
         }
     }
-    if(idx != -1){
         let val = this.stack[idx];
-        this.stack.splice(idx, idx);
+        this.stack.splice(idx, 1);
         return val;
-    }
-    return undefined;
+ 
 };
 
 LsArray.prototype.insert = function(item){
