@@ -122,7 +122,8 @@ class AStar{
                 fail: false, 
                 time_taken: performance.now() - t0, 
                 total_pop: count, 
-                max_stack_size: this.max_stack_size 
+                max_stack_size: this.max_stack_size,
+                type: this.open_nodes.type()
             });
             this.clear_state();
         } else {
@@ -135,10 +136,16 @@ class AStar{
     }
 }
 
-var astar = new AStar("heap", 1);
+let hn_coeff = 1;
+var astar_h = new AStar("heap", hn_coeff);
+var astar_ls = new AStar("lsarray", hn_coeff);
 onmessage = function(e){
-    astar.set_image(e.data.img);
-    astar.set_end(e.data.end[0],e.data.end[1]);
-    astar.set_start(e.data.start[0], e.data.start[1]);
-    astar.solve();
+    astar_h.set_image(e.data.img);
+    astar_h.set_end(e.data.end[0],e.data.end[1]);
+    astar_h.set_start(e.data.start[0], e.data.start[1]);
+    astar_h.solve();
+    astar_ls.set_image(e.data.img);
+    astar_ls.set_end(e.data.end[0],e.data.end[1]);
+    astar_ls.set_start(e.data.start[0], e.data.start[1]);
+    astar_ls.solve();
 }

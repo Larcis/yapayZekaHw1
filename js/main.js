@@ -17,13 +17,14 @@ worker.onmessage = function(e) {
             alert(d.message);
         }else{
             console.log(
-                "stats: \n"+ 
+                "stats "+d.type+":"+ 
                 "\ntotal time: "+ d.time_taken+ 
                 "\ntotal pop: "+d.total_pop+ 
                 "\nmax stack size: "+d.max_stack_size
             );
         }
-        is_calculating = false;
+        if(d.type == "LSarray")
+            is_calculating = false;
     } else if(e.data?.path){
         c.draw_path(e.data.path);
     }
