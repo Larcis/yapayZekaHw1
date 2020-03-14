@@ -1,5 +1,10 @@
 "use strict";
 
+/**
+ * icerisine eleman eklenip silinebilen normal bir dizi
+ * pop_min metoduyla dizideki minimum linear search ile
+ * aranıyor ve döndürülüyor.
+ */
 class LsArray{
     constructor(){
         this.stack = [];

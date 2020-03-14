@@ -1,5 +1,8 @@
 "use strict";
-
+/**
+ * heap ve lsarray e test_size tane ters sıralı(büyükten küçüğe) eleman ekleyi
+ * test_size/2 tanesini pop layan test case.
+ */
 function test_stack_and_lsarray(test_size=5999){
     let stack = new LsArray();
     let heap = new Heap();
@@ -25,6 +28,11 @@ function test_stack_and_lsarray(test_size=5999){
 
 };
 
+/**
+ * heap e l tane ters sıralı eleman ekleyıp
+ * bunları sırayla cekerek heapin doğruluğunu
+ * kontrol eden test case
+ */
 function test_heap(l=100){
     let heap = new Heap();
     console.time("heapSoloTest");
@@ -43,6 +51,9 @@ function test_heap(l=100){
     console.timeEnd("heapSoloTest");
 }
 
+/**
+ * yukarıdakinin lsarray(linear search array) versiyonu 
+ */
 function test_lsarray(l=100){
     let heap = new LsArray();
     console.time("lsarraySoloTest");
