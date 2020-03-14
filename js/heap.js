@@ -80,3 +80,7 @@ Heap.prototype.empty = function(){
 Heap.prototype.type = function(){
     return "Heap";   
 }
+
+Heap.prototype.size = function(){
+    return this.heap.length;   
+}

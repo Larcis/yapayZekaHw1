@@ -3,10 +3,11 @@
 importScripts('heap.js', 'lsarray.js');
 
 class AStar{
-    constructor(mode="heap"){
+    constructor(mode="heap", hn_coefficient=127){
         this.w  = null;
         this.h = null;
         this.data = null;
+        this.hn_coefficient = hn_coefficient;
         if(mode == "heap")
             this.open_nodes = new Heap();
         else
@@ -14,6 +15,7 @@ class AStar{
         this.start = null;
         this.end = null;
         this.visited = {};
+        this.max_stack_size = 0;
     }
     set_image(image){
         this.w  = image.width;
@@ -27,7 +29,7 @@ class AStar{
         return r;
     }
     hn(i, j){
-        return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*10;
+        return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*this.hn_coefficient;
         //return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*2;
     }
     is_in_range(i, j){
@@ -41,26 +43,31 @@ class AStar{
         for(let it = 0; it < 4; it++){
             let xx = parent.x + x_[it];
             let yy = parent.y + y_[it];
-            let gcost = this.gn(xx, yy) + parent.g_cost;
-            let item = {x: xx, y: yy, cost:(this.hn(xx, yy) + gcost), g_cost: gcost};
-            if(this.is_in_range(xx, yy) && !this.visited[""+xx+yy]){
-                this.visited[""+xx+yy] = parent;
+            if(this.is_in_range(xx, yy) && !this.visited[xx+"_"+yy]){
+                let gcost = this.gn(xx, yy) + parent.g_cost;
+                let item = {x: xx, y: yy, cost:(this.hn(xx, yy) + gcost), g_cost: gcost};
+                this.visited[xx+"_"+yy] = parent;
+                //postMessage([xx, yy]);
                 this.open_nodes.insert(item);
             }
-
+        }
+        let sz = this.open_nodes.size();
+        if(sz > this.max_stack_size){
+            this.max_stack_size = sz;
         }
     }
     clear_state(){
         this.start = this.end = null;
         this.visited = {};
         this.open_nodes.clear();
+        this.max_stack_size = 0;
     }
     set_start(i, j){
-        if(i  <= this.w && j < this.h)
+        if(i  <= this.w && j <= this.h)
             this.start = {x: i, y: j, cost: this.hn(i, j), g_cost: 0};
     }
     set_end(i, j){
-        if(i  <= this.w && j < this.h)
+        if(i  <= this.w && j <= this.h)
             this.end = {x: i, y: j};
     }
     trace_back(){
@@ -68,10 +75,10 @@ class AStar{
         let cur = this.end;
         do{
             path.push(cur);
-            cur = this.visited[""+cur.x+cur.y];
+            cur = this.visited[cur.x+"_"+cur.y];
         }while(!this.is_start(cur));
+        path.push(this.start);
         postMessage({path: path});
-        this.clear_state();
     }
     is_end(cur){
         return (cur.x == this.end.x && cur.y == this.end.y);
@@ -81,31 +88,52 @@ class AStar{
     }
     solve(){
         if(this.start == null || this.end == null){
-            console.log("başlangıç veya bitiş noktası belli değil.");
             this.clear_state();
-            postMessage({finished: true});
+            postMessage({
+                finished: true, 
+                fail: true,
+                message: "başlangıç veya bitiş noktası belli değil."
+            });
             return;
         }
+        console.log("başlangıç: " , this.start);
+        console.log("bitiş: " , this.end);    
         this.open_nodes.clear();
         this.open_nodes.insert(this.start);
         let found = false;
         let cur = null;
-        let iter = 599999;
+        let t0 = performance.now();
+        let count = 0;
         while(!this.open_nodes.empty() && !found){
             cur = this.open_nodes.pop_min();
-            //postMessage(cur);
+            count++;
             if(this.is_end(cur)){
                 found = true;
             } else {
                 this.add_neighbours(cur);
             }
         }
-        postMessage({finished: true});
-        this.trace_back();
+        if(found){
+            this.trace_back();
+            postMessage({
+                finished: true, 
+                fail: false, 
+                time_taken: performance.now() - t0, 
+                total_pop: count, 
+                max_stack_size: this.max_stack_size 
+            });
+            this.clear_state();
+        } else {
+            postMessage({
+                finished: true, 
+                fail: true, 
+                message: "yol bulunamadı."
+            });
+        } 
     }
 }
 
-var astar = new AStar("lsarray");
+var astar = new AStar("heap", 1);
 onmessage = function(e){
     astar.set_image(e.data.img);
     astar.set_end(e.data.end[0],e.data.end[1]);

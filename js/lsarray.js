@@ -37,3 +37,7 @@ LsArray.prototype.empty = function(){
 LsArray.prototype.type = function(){
     return "LSarray";
 };
+
+LsArray.prototype.size = function(){
+    return this.stack.length;
+};
