@@ -29,7 +29,9 @@ class AStar{
         return r;
     }
     hn(i, j){
-        return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*this.hn_coefficient;
+        if(this.end)
+            return Math.sqrt((i - this.end.x) ** 2 + (j - this.end.y) ** 2)*this.hn_coefficient;
+        return Number.MAX_VALUE;
         //return (Math.abs(i - this.end.x) + Math.abs(j - this.end.y))*2;
     }
     is_in_range(i, j){
