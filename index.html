@@ -6,25 +6,27 @@
     <title>A* main screen</title>
     <style>
         canvas {
-            transform-origin: left top;
-            transform: scale(.5, .5);
+            /*transform-origin: left top;
+            transform: scale(.5, .5);*/
+            width: 100%;
         }
-        html, body{
-            margin: 0px;
-                    }
-        #canvasContainer {
-            width: 800px;
-            height: 800px;
+        html , body{
+            margin-top: 0;
+            margin-left:0;
         }
-        p{
-            margin-right: 0em;
-            margin-top:0em;
-        }
+        /* {margin: 0; padding: 0;}*/
+        #container {height: 100%; width:100%; font-size: 0;}
+        #canvasContainer, #uiElement {display: inline-block; *display: inline; zoom: 1; vertical-align: top; font-size: 22px; color: black}
+        #canvasContainer {width: 75%;}
+        #uiElement {width: 24%; background: white; margin-left: 1%; overflow: auto;height: 90vh;}
     </style>
 </head>
 <body>
-    <div id="canvasContainer" width="600" height="600"></div>
-    <p>deneme</p>
+    <div id="container">
+        <div id="canvasContainer"></div>
+        <div id="uiElement">Şu anki durum: </div>
+        <input type='file' id="img_input" onchange="readURL(this);"  accept="image/*"/>
+    </div>
     <script src="js/canvas_helper.js"></script>
     <script src="js/main.js"></script>
    

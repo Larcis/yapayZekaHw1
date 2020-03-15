@@ -8,6 +8,7 @@ class CanvasHelper{
         this.canvas.width = this.canvas.height = size;
         this.canvas.id = id;
         document.getElementById("canvasContainer").appendChild(this.canvas);
+        //document.body.insertBefore(this.canvas, document.body.firstChild);
         this.ctx = this.canvas.getContext("2d");
         this.img = null; //canvasta buluna resmin w, h ve data si
         this.loaded = false; //canvasa resmin yüklenip yüklenmediğini takip eden değişken
@@ -17,6 +18,8 @@ class CanvasHelper{
         let this_ = this;
         this.loaded_image.onload = function () {
             this_.loaded = true;
+            this_.canvas.width = this.width;
+            this_.canvas.height = this.height;
             this_.ctx.drawImage(this, 0, 0, this.width, this.height);
             this_.img = this_.ctx.getImageData(0, 0, this.width, this.height);
         }
@@ -27,7 +30,7 @@ class CanvasHelper{
 }
 
 CanvasHelper.prototype.set_path_colors = function(){
-    this.path_colors = ["green", "yellow", "blue", "white"];
+    this.path_colors = ["green", "yellow", "blue", "Indigo"];
 }
 
 /**

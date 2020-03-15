@@ -60,7 +60,7 @@ class BestFirstSearch{
                 //postMessage([xx, yy]); 
                 //üstteki satır main threade mesaj gonderır ve 
                 //main thread ilgili x, y yi hesaplama yapılırken ziyaret edildi diye yesile boyar
-                //ilgili satırı comment ten cıkarırsanız astar yapılırken bakılan tum hucrelerı gorsel olarak gorebılırsınız
+                //ilgili satırı comment ten cıkarırsanız bfs yapılırken bakılan tum hucrelerı gorsel olarak gorebılırsınız
                 //debug amaclı kullanıldı.
                 this.open_nodes.insert(item); //ilgili komsuyu gidilebilecek nodllar listesine ekle
             }
@@ -120,7 +120,7 @@ class BestFirstSearch{
         return (cur.x == this.start.x && cur.y == this.start.y);
     }
     /**
-     * set edilmis baslangıc ve bitis noktası arasında astar yapar
+     * set edilmis baslangıc ve bitis noktası arasında best first search yapar
      * heurisitic fonksiyon olarak sınıf icerisinde tanımlı hn fonksiyonunu
      * kullanır. Gercek maliyet hesabı için sınıf içerisinde tanımlı 
      * gn fonksiyonunu kullanır. eger baslangıc veya bitis set edilmemisse
