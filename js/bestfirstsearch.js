@@ -181,7 +181,7 @@ var bfs_h = new BestFirstSearch("heap"); //heap yapısını kullanan bfs
 var bfs_ls = new BestFirstSearch("lsarray"); //linear search ile minimum bulan normal bir diziyi kullanan bfs
 
 onmessage = function(e){//main thread den mesaj gelirse calısacak fonksiyon
-    if(e.data?.type == "heap"){ //heap yapısıyla ıstıyorsa heapli bfs ı calıstır.
+    if(e.data.hasOwnProperty("type") && e.data.type == "heap"){ //heap yapısıyla ıstıyorsa heapli bfs ı calıstır.
         trigger_bfs(bfs_h, e);
     } else {
         trigger_bfs(bfs_ls, e);

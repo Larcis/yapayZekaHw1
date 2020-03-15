@@ -195,7 +195,7 @@ var astar_h = new AStar("heap", hn_coeff); //heap yapısını kullanan astar
 var astar_ls = new AStar("lsarray", hn_coeff); //linear search ile minimum bulan normal bir diziyi kullanan astar
 
 onmessage = function(e){//main thread den mesaj gelirse calısacak fonksiyon
-    if(e.data?.type == "heap"){ //heap yapısıyla ıstıyorsa heapli astar ı calıstır.
+    if(e.data.hasOwnProperty("type") && e.data.type == "heap"){ //heap yapısıyla ıstıyorsa heapli astar ı calıstır.
         trigger_astar(astar_h, e);
     } else {
         trigger_astar(astar_ls, e);

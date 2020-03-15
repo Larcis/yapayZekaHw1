@@ -121,7 +121,7 @@ function reload_wrapper(){ //canvastakı resmı yenılemek ıcın
 }
 //setInterval(()=> console.log(state), 50);
 function worker_onmessage(e) { //arka planda calısan astar kodundan mesaj gelınce calıstırılacak fonksıyon
-    if(e.data?.finished){ //eger gelen mesaj finished iceriyorsa
+    if(e.data.hasOwnProperty("finished")){ //eger gelen mesaj finished iceriyorsa
         let d = e.data;
         if(d.fail){ //gelen mesaj da fail true ise
             alert(d.message); // fail mesajını kullanıcıya goster
@@ -156,7 +156,7 @@ function worker_onmessage(e) { //arka planda calısan astar kodundan mesaj gelı
                 input_button.disabled = false; 
             }
         }
-    } else if(e.data?.path){//eger astar veya bfs kodundan gelen mesajda path varsa
+    } else if(e.data.hasOwnProperty("path")){//eger astar veya bfs kodundan gelen mesajda path varsa
         c.draw_path(e.data.path); // canvasa pathi cizdir.
     }
     else
