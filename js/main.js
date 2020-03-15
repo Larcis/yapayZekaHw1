@@ -21,7 +21,8 @@ let message_colors = [
 
 let ui_element = document.getElementById("uiElement"); // ui için kullanılan div html elementi
 let input_button = document.getElementById("img_input"); //input butonu
-
+let rng_slider = document.getElementById("rng"); //hn_coeff ayarlayıcı
+let rng_display = document.getElementById("hnCoeffText");//hn_coeff in o anki değerini gösteren html elementi
 let start = null; //baslangıc koordinatı
 let end = null; //bıtıs koordinatı
 let state = 0; //durum makınesının durum degerı
@@ -66,6 +67,12 @@ setTimeout(function(){//500 ms sonra bu fonksiyonu calıstır. (resmin yuklemes�
 }, 500);
 
 
+function set_hn_coeff_main(val){
+    //console.log(val)
+    rng_display.innerText = "hn_coeff: "+val;
+    astar_worker.postMessage({hn_coeff: val});
+}
+
 function update_ui(){
     var p = document.createElement("p");
     var node = document.createTextNode("• "+messages[state]);
@@ -87,8 +94,7 @@ function clear_ui(){
  * sırada bir sonraki bir öncekinin bitimiyle tetiklenir.
  */
 function trigger_workers(){
-    is_calculating = true;
-    input_button.disabled = true;
+    set_is_calculating(true);
     let im = c.get_img_data();
     function waitUntilStateChange(waited_state, func){
         if(state != waited_state ){
@@ -97,7 +103,7 @@ function trigger_workers(){
             func()
         }
     }
-    console.log(im, start, end);
+    //console.log(im, start, end);
     astar_worker.postMessage({img: im, start:start, end: end, type: "heap"});
     waitUntilStateChange(3, ()=>{
         astar_worker.postMessage({img: im, start:start, end: end, type: "lsarray"});
@@ -111,12 +117,10 @@ function trigger_workers(){
 }
 
 function reload_wrapper(){ //canvastakı resmı yenılemek ıcın
-    is_calculating = true; //mousedown eventını ıptal etmek ıcın
-    input_button.disabled =true;
+    set_is_calculating(true); //mousedown eventını ıptal etmek ıcın
     c.reload(); // aynı resmı bır daha yukle
     setTimeout(()=> {
-        is_calculating = false;
-        input_button.disabled = false; 
+        set_is_calculating(false); 
     }, 300); //300 ms sonra mousedown eventını tekrar aktıf et.
 }
 //setInterval(()=> console.log(state), 50);
@@ -128,8 +132,7 @@ function worker_onmessage(e) { //arka planda calısan astar kodundan mesaj gelı
             reload_wrapper();
             state = 0;
             //setTimeout(()=>clear_ui(), 3500);
-            is_calculating = false; // hesaplama durumunu ayarla
-            input_button.disabled = false; 
+            set_is_calculating(false); // hesaplama durumunu ayarla
         }else{ // eger fail etmemisse statları konsola yazdır.
             console.log(
                 "stats "+d.type+":"+ 
@@ -152,8 +155,7 @@ function worker_onmessage(e) { //arka planda calısan astar kodundan mesaj gelı
             } else {
                 state = 0;
                 //setTimeout(()=>clear_ui(), 3500);
-                is_calculating = false;
-                input_button.disabled = false; 
+                set_is_calculating(false);
             }
         }
     } else if(e.data.hasOwnProperty("path")){//eger astar veya bfs kodundan gelen mesajda path varsa
@@ -198,20 +200,24 @@ function create_table(data) {
 
 function readURL(input) {
     if (input.files && input.files[0]) {
-        is_calculating = true;
-        input_button.disabled = true; 
+        set_is_calculating(true); 
         var reader = new FileReader();
 
         reader.onload = function (e) {
             c.image_loader(e.target.result);
             setTimeout(() =>{
-                is_calculating = false;
-                input_button.disabled = false; 
+                set_is_calculating(false);
             }, 500);
         };
 
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+function set_is_calculating(val){
+    is_calculating = val;
+    input_button.disabled = val; 
+    rng_slider.disabled = val;
 }
 
 

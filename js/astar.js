@@ -17,6 +17,10 @@ class AStar{
         this.visited = {}; //astar yaparken daha önce ziyaret edilmiş nodların parentlarının saklandıgı alan
         this.max_stack_size = 0; //stackin en buyuk oldugu andakı degerı
     }
+    set_hn_coeff(val){
+        //console.log("hn_coeff setted to "+val);
+        this.hn_coefficient = val;
+    }
     /**
      * astar da kullanılacak resmı set eder
      */
@@ -195,11 +199,18 @@ var astar_h = new AStar("heap", hn_coeff); //heap yapısını kullanan astar
 var astar_ls = new AStar("lsarray", hn_coeff); //linear search ile minimum bulan normal bir diziyi kullanan astar
 
 onmessage = function(e){//main thread den mesaj gelirse calısacak fonksiyon
-    if(e.data.hasOwnProperty("type") && e.data.type == "heap"){ //heap yapısıyla ıstıyorsa heapli astar ı calıstır.
-        trigger_astar(astar_h, e);
-    } else {
-        trigger_astar(astar_ls, e);
+    if(e.data.hasOwnProperty("hn_coeff")){
+        astar_h.set_hn_coeff(e.data.hn_coeff);
+        astar_ls.set_hn_coeff(e.data.hn_coeff);
+        return;
     }
+    if(e.data.hasOwnProperty("type")){ //heap yapısıyla ıstıyorsa heapli astar ı calıstır.
+        if(e.data.type == "heap"){
+            trigger_astar(astar_h, e);
+        }else{
+            trigger_astar(astar_ls, e);
+        }
+    } 
 }
 
 /**

@@ -19,13 +19,45 @@
         #canvasContainer, #uiElement {display: inline-block; *display: inline; zoom: 1; vertical-align: top; font-size: 22px; color: black}
         #canvasContainer {width: 75%;}
         #uiElement {width: 24%; background: white; margin-left: 1%; overflow: auto;height: 90vh;}
+        .slider {
+            -webkit-appearance: none;
+            width: 50%;
+            height: 15px;
+            border-radius: 5px;  
+            background: #d3d3d3;
+            outline: none;
+            opacity: 1.;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%; 
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <div id="canvasContainer"></div>
         <div id="uiElement">Şu anki durum: </div>
-        <input type='file' id="img_input" onchange="readURL(this);"  accept="image/*"/>
+        <div style="width:75%">
+            <input type='file' id="img_input" onchange="readURL(this);" style="width:25%;" accept="image/*"/>
+            <input type="range" min="1" max="255" value="1" class="slider" onchange="set_hn_coeff_main(this.value)" id="rng">
+            <p style="font-size:18px;display: inline;" id="hnCoeffText">hn_coeff: 1</p>
+        </div>     
     </div>
     <script src="js/canvas_helper.js"></script>
     <script src="js/main.js"></script>
