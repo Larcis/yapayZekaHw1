@@ -29,7 +29,7 @@ update_ui();
 let is_calculating = false; //arka planda suan hesaplama yapılıyor mu?
 
 let c = new CanvasHelper(3000); //canvas
-c.image_loader("images/test6.jpg"); //canvasa ilgili resmi yükle
+c.image_loader("images/test7.jpg"); //canvasa ilgili resmi yükle
 
 
 let astar_worker = new Worker("js/astar.js"); //arka planda astar hesaplama altyapısı baslat
